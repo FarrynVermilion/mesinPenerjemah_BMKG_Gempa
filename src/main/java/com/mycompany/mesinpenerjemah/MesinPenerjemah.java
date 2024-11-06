@@ -20,55 +20,56 @@ public class MesinPenerjemah extends javax.swing.JFrame {
      */
     Database dbsetting;
     String driver,database,user,pass,userLogin;
-    String[] tokenAbai;
     String[] tokenTdkAbai;
-    ArrayList<String> abai = new ArrayList<>();
+    ArrayList<String> tanya = new ArrayList<>();
+    ArrayList<String> pelengkap = new ArrayList<>();
+    ArrayList<String> keterangan = new ArrayList<>();
     ArrayList<String> atribut = new ArrayList<>();
-    ArrayList<String> operator_tahun = new ArrayList<>();
-    ArrayList<String> sambung = new ArrayList<>();
-    ArrayList<String> operator_bukan = new ArrayList<>();
+    ArrayList<String> operator = new ArrayList<>();
+    ArrayList<String> wilayah = new ArrayList<>();
+    
+    ArrayList<String> result_struct = new ArrayList<>();
     public MesinPenerjemah() {
         try{
-            BufferedReader fileAbai = new BufferedReader(new FileReader("/home/edelweiss/NetBeansProjects/mesinPenerjemah/abai.csv"));
-            BufferedReader fileToken = new BufferedReader(new FileReader("/home/edelweiss/NetBeansProjects/mesinPenerjemah/token.csv"));
-            CSVReader csvAbai = new CSVReader(fileAbai);
+            String basePath = new File("").getAbsolutePath();
+            BufferedReader fileToken = new BufferedReader(new FileReader(basePath+"/token.csv"));
             CSVReader csvToken = new CSVReader(fileToken);
             boolean x=false;
-            while ((tokenAbai= csvAbai.readNext()) != null) { 
-                if(x==false){
-                    x=true;
-                    continue;
-                }
-                for (String cell : tokenAbai) { 
-                    abai.add(cell);
-                }
-            } 
-            x=false;
             while ((tokenTdkAbai= csvToken.readNext()) != null) { 
                 if(x==false){
                     x=true;
                     continue;
                 }
-                atribut.add(tokenTdkAbai[0]);
-                operator_tahun.add(tokenTdkAbai[1]);
-                sambung.add(tokenTdkAbai[2]);
-                operator_bukan.add(tokenTdkAbai[3]);
+                tanya.add(tokenTdkAbai[0]);
+                pelengkap.add(tokenTdkAbai[1]);
+                keterangan.add(tokenTdkAbai[2]);
+                atribut.add(tokenTdkAbai[3]);
+                operator.add(tokenTdkAbai[4]);
+                wilayah.add(tokenTdkAbai[5]);
             }
-        }
-        catch(Exception e){
+        }catch(Exception e){
             System.out.println(e);
         }
-        abai.removeAll((Collections.singletonList("")));
-        atribut.removeAll((Collections.singletonList("")));
-        operator_tahun.removeAll((Collections.singletonList("")));
-        sambung.removeAll((Collections.singletonList("")));
-        operator_bukan.removeAll((Collections.singletonList("")));
         
-        replace(abai);
+        for(String a:tanya){
+            System.out.println(a);
+        }
+        tanya.removeAll((Collections.singletonList("")));
+        pelengkap.removeAll((Collections.singletonList("")));
+        keterangan.removeAll((Collections.singletonList("")));
+        atribut.removeAll((Collections.singletonList("")));
+        operator.removeAll((Collections.singletonList("")));
+        wilayah.removeAll((Collections.singletonList("")));
+        
+        replace(tanya);
+        replace(pelengkap);
+        replace(keterangan);
         replace(atribut);
-        replace(operator_tahun);
-        replace(sambung);
-        replace(operator_bukan);
+        replace(operator);
+        replace(wilayah);
+        
+
+        
         initComponents();
         dbsetting = new Database();
         driver = dbsetting.SettingPanel("DBDriver");
@@ -100,6 +101,12 @@ public class MesinPenerjemah extends javax.swing.JFrame {
         btn_bersih = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
+        result_parse1 = new javax.swing.JLabel();
+        result_parse2 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        Structure = new javax.swing.JTextArea();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        SQL_Result = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -158,19 +165,45 @@ public class MesinPenerjemah extends javax.swing.JFrame {
             new String [] {
                 "Index", "Kata", "Token", "Parsing"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane2.setViewportView(table);
+
+        result_parse1.setText("Hasil Struktur :");
+        result_parse1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+
+        result_parse2.setText("Hasil SQL      :");
+        result_parse2.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+
+        Structure.setEditable(false);
+        Structure.setColumns(20);
+        Structure.setRows(5);
+        Structure.setText("Struktur kalimat");
+        jScrollPane3.setViewportView(Structure);
+
+        SQL_Result.setEditable(false);
+        SQL_Result.setColumns(20);
+        SQL_Result.setRows(5);
+        SQL_Result.setText("Hasil SQL");
+        jScrollPane4.setViewportView(SQL_Result);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -184,7 +217,15 @@ public class MesinPenerjemah extends javax.swing.JFrame {
                                 .addComponent(btn_proses, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btn_bersih, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jScrollPane1))))
+                            .addComponent(jScrollPane1)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(result_parse2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(result_parse1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -198,7 +239,7 @@ public class MesinPenerjemah extends javax.swing.JFrame {
                         .addComponent(jLabel2))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(12, 12, 12)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_scanner, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -207,7 +248,15 @@ public class MesinPenerjemah extends javax.swing.JFrame {
                     .addComponent(btn_proses, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btn_bersih, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(result_parse1)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(result_parse2, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -217,57 +266,95 @@ public class MesinPenerjemah extends javax.swing.JFrame {
     private void btn_scannerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_scannerActionPerformed
         // TODO add your handling code here:
         String[] a= kalimat.getText().split(" ");
-        tblModel.setRowCount(0);
-        String[] dummy={"","","",""};
-        int i=0;
-        for(String b:a){
-            tblModel.addRow(dummy);
-            tblModel.setValueAt(i+1, i,0);
-            tblModel.setValueAt(b, i,1);
-            i++;
+        if (a.length<=5){
+            Structure.setText("Kata kurang dari 5");
+        }else{
+            tblModel.setRowCount(0);
+            String[] dummy={"","","",""};
+            int i=0;
+            for(String b:a){
+                tblModel.addRow(dummy);
+                tblModel.setValueAt(i+1, i,0);
+                tblModel.setValueAt(b.toLowerCase(), i,1);
+                i++;
+            }
         }
+        
     }//GEN-LAST:event_btn_scannerActionPerformed
 
     private void btn_tokenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_tokenActionPerformed
         // TODO add your handling code here:
         int i = table.getRowCount();
         for(int x=0;x<i;x++){
-            int res=1;
-            String compare =tblModel.getValueAt(x, 1).toString().toLowerCase();
-            if(abai.contains(compare)){
-                res=0;
-            }
-            
+            String res;
+            String compare =tblModel.getValueAt(x, 1).toString();
+            if(tanya.contains(compare)
+                    ||pelengkap.contains(compare)
+                    ||keterangan.contains(compare)
+                    ||atribut.contains(compare)
+                    ||operator.contains(compare)
+                    ||wilayah.contains(compare)
+                    ){
+                    res="1";
+            }else{
+                res="0";
+            }            
             tblModel.setValueAt(res,x,2);
         }
     }//GEN-LAST:event_btn_tokenActionPerformed
 
     private void btn_parsingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_parsingActionPerformed
         // TODO add your handling code here:
+        result_struct.clear();
         for(int x=0;x<table.getRowCount();x++){
-            String compare =tblModel.getValueAt(x, 1).toString().toLowerCase();
-            if(atribut.contains(compare)){
-                tblModel.setValueAt("Atribut",x,3);
-            }else if(operator_tahun.contains(compare)){
-                tblModel.setValueAt("Operator_tahun",x,3);
-            }else if(sambung.contains(compare)){
-                tblModel.setValueAt("Sambung",x,3);
-            }else if(operator_bukan.contains(compare)){
-                tblModel.setValueAt("Operator_bukan",x,3);
-            }else{
-                tblModel.setValueAt("Abai",x,3);
+            if(tblModel.getValueAt(x, 2).toString().equals("1")){
+                String Value;
+                String compare =tblModel.getValueAt(x, 1).toString();
+                if(tanya.contains(compare)){
+                    Value = "tanya";
+                }else if(pelengkap.contains(compare)){
+                    Value="pelengkap";
+                }else if(keterangan.contains(compare)){
+                    Value="keterangan";
+                }else if(atribut.contains(compare)){
+                    Value="atribut";
+                }else if(operator.contains(compare)){
+                    Value="operator";
+                }else if(wilayah.contains(compare)){
+                    Value="wilayah";
+                }else{Value="?";}
+                tblModel.setValueAt(Value, x, 3);
+                result_struct.add(Value);
             }
-            
         }
+        Structure.setText(null);
+        int x=1;
+        for(String a:result_struct){
+            if(x==result_struct.size()){
+                Structure.append(a);
+            }else{
+                Structure.append(a+" -> ");
+            }
+            x++;
+        }
+        
     }//GEN-LAST:event_btn_parsingActionPerformed
 
     private void btn_prosesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_prosesActionPerformed
         // TODO add your handling code here:
+        String result;
+
+        for (String a:result_struct){
+            if(a.equals("Atribut")){
+                
+            }
+        }
     }//GEN-LAST:event_btn_prosesActionPerformed
 
     private void btn_bersihActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_bersihActionPerformed
         // TODO add your handling code here:
         tblModel.setRowCount(0);
+        Structure.setText("Hasil structure");
     }//GEN-LAST:event_btn_bersihActionPerformed
 
     /**
@@ -349,13 +436,38 @@ public class MesinPenerjemah extends javax.swing.JFrame {
         ListIterator<String> iterator = strings.listIterator();
         while (iterator.hasNext())
         {
-            iterator.set(iterator.next().toLowerCase());
+            iterator.set(iterator.next().toLowerCase().trim());
         }
     }
+//    public void TipeQuery1(String atribut){
+//        String stat = "";
+//        String[] data = new String[4];
+//        try{
+//            Class.forName(driver);
+//            Connection kon = DriverManager.getConnection(database,user,pass);
+//            Statement stt = kon.createStatement();
+//            String SQL = "SELECT "+ atribut +" FROM Data_Gempa_Terkini";
+//            ResultSet res = stt.executeQuery(SQL);
+//            String hasil = "";
+//            
+//            while(res.next()){
+//                hasil += "\n"+res.getString("Wilayah");
+//                //jTextArea1.setText(hasil);
+//            }
+//            SQL_Result.setText(hasil);
+//            res.close();
+//            stt.close();
+//            kon.close();
+//        }catch(Exception exc){
+//            System.err.println(exc.getMessage());
+//        }
+//    }
     
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea SQL_Result;
+    private javax.swing.JTextArea Structure;
     private javax.swing.JButton btn_bersih;
     private javax.swing.JButton btn_parsing;
     private javax.swing.JButton btn_proses;
@@ -365,7 +477,11 @@ public class MesinPenerjemah extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTextArea kalimat;
+    private javax.swing.JLabel result_parse1;
+    private javax.swing.JLabel result_parse2;
     private javax.swing.JTable table;
     // End of variables declaration//GEN-END:variables
     private javax.swing.table.DefaultTableModel tblModel = getDefaultTabelModel();

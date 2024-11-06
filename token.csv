@@ -1,22 +1,15 @@
-ATRIBUT,OPERATOR TAHUN,KATA SAMBUNG,OPERATOR BUKAN
-Nim,sebelum,dan,bukan
-Nama,sesudah,,tidak
-Jeniskelamin,kurang,,selain
-Alamat,lebih,,
-Notelepon,,,
-Tempatlahir,,,
-Tanggallahir,,,
-Programstudi,,,
-Ip,,,
-Masastudi,,,
-Status,,,
-Tahunmasuk,,,
-Skkelulusan,,,
-Judulskripsi,,,
-Pembimbing,,,
-Matakuliah,,,
-Kode,,,
-Semester,,,
-Sks,,,
-Nilai,,,
-Dosen,,,
+Kata Tanya,Kata Pelengkap,Kata Keterangan,Atribut,Operator,Wilayah
+Berapa,info,di,field,seluruh,sarmi-papua
+Dimana,terjadi,dari,tanggal,terbesar,tasikmalaya-jabar
+Kapan,field,yang,jam,berdasarkan,malukutenggarabrt
+tampilkan,posisi,pada,koordinat,,papua
+,pada,diantara,lintang,,
+,gempa,,bujur,,
+,terkini,,magnitude,,
+,bumi,,kedalaman,,
+,,,wilayah,,
+,,,terkini,,
+,,,pusat,,
+,,,kekuatan,,
+,,,lokasi,,
+,,,pusat,,
