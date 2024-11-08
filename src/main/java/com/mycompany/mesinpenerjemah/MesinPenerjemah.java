@@ -28,7 +28,6 @@ public class MesinPenerjemah extends javax.swing.JFrame {
     ArrayList<String> operator = new ArrayList<>();
     ArrayList<String> wilayah = new ArrayList<>();
     
-    ArrayList<String> result_struct = new ArrayList<>();
     public MesinPenerjemah() {
         try{
             String basePath = new File("").getAbsolutePath();
@@ -265,7 +264,7 @@ public class MesinPenerjemah extends javax.swing.JFrame {
 
     private void btn_scannerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_scannerActionPerformed
         // TODO add your handling code here:
-        String[] a= kalimat.getText().split(" ");
+        String[] a=  kalimat.getText().replaceAll("[. , ; ? /]"," ").split(" ");
         if (a.length<=5){
             Structure.setText("Kata kurang dari 5");
         }else{
@@ -278,8 +277,7 @@ public class MesinPenerjemah extends javax.swing.JFrame {
                 tblModel.setValueAt(b.toLowerCase(), i,1);
                 i++;
             }
-        }
-        
+        }        
     }//GEN-LAST:event_btn_scannerActionPerformed
 
     private void btn_tokenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_tokenActionPerformed
@@ -305,7 +303,16 @@ public class MesinPenerjemah extends javax.swing.JFrame {
 
     private void btn_parsingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_parsingActionPerformed
         // TODO add your handling code here:
-        result_struct.clear();
+        HashMap<String, Integer> lokasiKata = new HashMap<>();
+        HashMap<String, ArrayList<String>> jenisKata = new HashMap<>();
+        
+        jenisKata.put("tanya", new ArrayList<String>());
+        jenisKata.put("pelengkap", new ArrayList<String>());
+        jenisKata.put("keterangan", new ArrayList<String>());
+        jenisKata.put("atribut", new ArrayList<String>());
+        jenisKata.put("operator", new ArrayList<String>());
+        jenisKata.put("wilayah", new ArrayList<String>());
+        
         for(int x=0;x<table.getRowCount();x++){
             if(tblModel.getValueAt(x, 2).toString().equals("1")){
                 String Value;
@@ -322,33 +329,93 @@ public class MesinPenerjemah extends javax.swing.JFrame {
                     Value="operator";
                 }else if(wilayah.contains(compare)){
                     Value="wilayah";
+                }else if (cekAngka(compare)){
+                    Value="data";
                 }else{Value="?";}
                 tblModel.setValueAt(Value, x, 3);
-                result_struct.add(Value);
+                ArrayList<String> a = jenisKata.get(Value);
+                a.add(compare);
+                jenisKata.put(Value,a);
+                lokasiKata.put(compare,x+1);
             }
-        }
-        Structure.setText(null);
-        int x=1;
-        for(String a:result_struct){
-            if(x==result_struct.size()){
-                Structure.append(a);
-            }else{
-                Structure.append(a+" -> ");
-            }
-            x++;
         }
         
-    }//GEN-LAST:event_btn_parsingActionPerformed
-
-    private void btn_prosesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_prosesActionPerformed
-        // TODO add your handling code here:
-        String result;
-
-        for (String a:result_struct){
-            if(a.equals("Atribut")){
-                
+        if(jenisKata.get("tanya").contains("tampilkan")&&Integer.parseInt(tblModel.getValueAt(lokasiKata.get("tampilkan"), 2).toString())==1){
+            Structure.setText("Aturan 1");
+            ArrayList<String> Array=jenisKata.get("atribut");
+            if(jenisKata.get("atribut").size()==0&&jenisKata.get("operator").contains("seluruh")&&jenisKata.get("pelengkap").contains("field") && lokasiKata.get("seluruh")+1==lokasiKata.get("field")){
+              TipeQuery1();
+            }else{
+              TipeQuery2(jenisKata.get("atribut"));   
             }
         }
+    }//GEN-LAST:event_btn_parsingActionPerformed
+    
+        public void TipeQuery1(){
+        try{
+            Class.forName(driver);
+            Connection kon = DriverManager.getConnection(database,user,pass);
+            Statement stt = kon.createStatement();
+            String SQL = "SELECT * FROM Data_Gempa_Terkini";
+            ResultSet res = stt.executeQuery(SQL);
+            
+            String Hasil ="";
+            while(res.next()){
+                for(int x = 1;x<=11;x++){
+                    Hasil += res.getString(x)+"\t";
+                }
+                Hasil+="\n";
+            }
+            SQL_Result.setText(Hasil);
+            res.close();
+            stt.close();
+            kon.close();
+        }catch(Exception exc){
+            System.err.println(exc.getMessage());
+        }
+    }
+    
+        public void TipeQuery2(ArrayList<String> Atribut){
+        try{
+            if(Atribut.contains("koordinat")){
+                Atribut.remove("koordinat");
+                Atribut.add("lintang");
+                Atribut.add("bujur");
+            }
+            Class.forName(driver);
+            Connection kon = DriverManager.getConnection(database,user,pass);
+            Statement stt = kon.createStatement();
+            String SQL = "SELECT ";
+            for(int x=0;x<Atribut.size();x++){
+                if(x==Atribut.size()-1){
+                    SQL+=Atribut.get(x);
+                }else{
+                    SQL+=Atribut.get(x)+",";
+                }
+                System.out.println(Atribut.get(x));
+            }
+            SQL +=" from Data_Gempa_Terkini ";
+            ResultSet res = stt.executeQuery(SQL);
+            String Hasil="";
+            while(res.next()){
+                for(String str:Atribut){
+                    Hasil+=str+" "+res.getString(str);
+                }
+                Hasil+="\n";
+            }
+            //menampilkan dalam text area
+            SQL_Result.setText(Hasil);
+            res.close();
+            stt.close();
+            kon.close();
+        }catch(Exception exc){
+            System.err.println(exc.getMessage());
+        }
+    }
+        
+    private void btn_prosesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_prosesActionPerformed
+        // TODO add your handling code here:
+        Structure.getText();
     }//GEN-LAST:event_btn_prosesActionPerformed
 
     private void btn_bersihActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_bersihActionPerformed
@@ -439,30 +506,15 @@ public class MesinPenerjemah extends javax.swing.JFrame {
             iterator.set(iterator.next().toLowerCase().trim());
         }
     }
-//    public void TipeQuery1(String atribut){
-//        String stat = "";
-//        String[] data = new String[4];
-//        try{
-//            Class.forName(driver);
-//            Connection kon = DriverManager.getConnection(database,user,pass);
-//            Statement stt = kon.createStatement();
-//            String SQL = "SELECT "+ atribut +" FROM Data_Gempa_Terkini";
-//            ResultSet res = stt.executeQuery(SQL);
-//            String hasil = "";
-//            
-//            while(res.next()){
-//                hasil += "\n"+res.getString("Wilayah");
-//                //jTextArea1.setText(hasil);
-//            }
-//            SQL_Result.setText(hasil);
-//            res.close();
-//            stt.close();
-//            kon.close();
-//        }catch(Exception exc){
-//            System.err.println(exc.getMessage());
-//        }
-//    }
     
+    public static boolean cekAngka(String str) { 
+        try {  
+            Double.parseDouble(str);  
+            return true;
+        }catch(NumberFormatException e){  
+            return false;  
+        }  
+    }
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
