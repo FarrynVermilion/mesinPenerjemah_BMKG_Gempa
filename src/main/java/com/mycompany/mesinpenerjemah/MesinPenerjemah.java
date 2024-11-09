@@ -49,10 +49,6 @@ public class MesinPenerjemah extends javax.swing.JFrame {
         }catch(Exception e){
             System.out.println(e);
         }
-        
-        for(String a:tanya){
-            System.out.println(a);
-        }
         tanya.removeAll((Collections.singletonList("")));
         pelengkap.removeAll((Collections.singletonList("")));
         keterangan.removeAll((Collections.singletonList("")));
@@ -340,7 +336,8 @@ public class MesinPenerjemah extends javax.swing.JFrame {
             }
         }
         
-        if(jenisKata.get("tanya").contains("tampilkan")&&Integer.parseInt(tblModel.getValueAt(lokasiKata.get("tampilkan"), 2).toString())==1){
+        if(jenisKata.get("tanya").contains("tampilkan")
+                &&Integer.parseInt(tblModel.getValueAt(lokasiKata.get("tampilkan"), 2).toString())==1){
             Structure.setText("Aturan 1");
             ArrayList<String> Array=jenisKata.get("atribut");
             if(jenisKata.get("atribut").size()==0&&jenisKata.get("operator").contains("seluruh")&&jenisKata.get("pelengkap").contains("field") && lokasiKata.get("seluruh")+1==lokasiKata.get("field")){
@@ -349,6 +346,23 @@ public class MesinPenerjemah extends javax.swing.JFrame {
               TipeQuery2(jenisKata.get("atribut"));   
             }
         }
+        else if((!jenisKata.get("wilayah").isEmpty())
+                &&(jenisKata.get("atribut").contains("lintang")||jenisKata.get("atribut").contains("bujur")||jenisKata.get("atribut").contains("koordinat"))
+                ){
+            Structure.setText("Aturan 2");
+            
+            if(jenisKata.get("atribut").contains("koordinat")
+                    ||(jenisKata.get("atribut").contains("bujur")&&jenisKata.get("atribut").contains("lintang"))){
+                TipeQuery3(jenisKata.get("wilayah"),"all");
+            }else if(jenisKata.get("atribut").contains("bujur")){
+                System.out.println("bujur");
+                TipeQuery3(jenisKata.get("wilayah"),"bujur");
+            }else if(jenisKata.get("atribut").contains("lintang")){
+                TipeQuery3(jenisKata.get("wilayah"),"lintang");
+                System.out.println("lintang");
+            }
+        }
+        
     }//GEN-LAST:event_btn_parsingActionPerformed
     
         public void TipeQuery1(){
@@ -392,13 +406,60 @@ public class MesinPenerjemah extends javax.swing.JFrame {
                 }else{
                     SQL+=Atribut.get(x)+",";
                 }
-                System.out.println(Atribut.get(x));
             }
             SQL +=" from Data_Gempa_Terkini ";
             ResultSet res = stt.executeQuery(SQL);
             String Hasil="";
             while(res.next()){
                 for(String str:Atribut){
+                    Hasil+=str+" "+res.getString(str);
+                }
+                Hasil+="\n";
+            }
+            //menampilkan dalam text area
+            SQL_Result.setText(Hasil);
+            res.close();
+            stt.close();
+            kon.close();
+        }catch(Exception exc){
+            System.err.println(exc.getMessage());
+        }
+    }
+    public void TipeQuery3(ArrayList<String> Wilayah, String Request){
+        try{
+            String[] querry;
+            if(Request.equals("all")){
+                querry=new String[2];
+                querry[0]="bujur";
+                querry[1]="lintang";
+            }else{
+                querry=new String[1];
+                querry[0]=Request;
+            }
+            Class.forName(driver);
+            Connection kon = DriverManager.getConnection(database,user,pass);
+            Statement stt = kon.createStatement();
+            String SQL = "SELECT ";
+            for(int x=0;x<querry.length;x++){
+                if(x==querry.length-1){
+                    SQL+=querry[x];
+                }else{
+                    SQL+=querry[x]+",";
+                }
+            }
+            SQL +=" from Data_Gempa_Terkini  WHERE ";
+            for(int x=0;x<Wilayah.size();x++){
+                if(x==0){
+                    SQL+="Wilayah LIKE '%"+Wilayah.get(x)+"%' ";
+                }else{
+                    SQL+=" OR Wilayah LIKE '%"+Wilayah.get(x)+"%'";
+                }
+            }
+            
+            ResultSet res = stt.executeQuery(SQL);
+            String Hasil="";
+            while(res.next()){
+                for(String str:querry){
                     Hasil+=str+" "+res.getString(str);
                 }
                 Hasil+="\n";
