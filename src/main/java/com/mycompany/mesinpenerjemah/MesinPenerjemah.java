@@ -347,12 +347,11 @@ public class MesinPenerjemah extends javax.swing.JFrame {
             }
         }
         else if((!jenisKata.get("wilayah").isEmpty())
-                &&(jenisKata.get("pelengkap").contains("posisi")||jenisKata.get("pelengkap").contains("diposisi"))
-                &&(jenisKata.get("atribut").contains("lintang")||jenisKata.get("atribut").contains("bujur")||jenisKata.get("atribut").contains("koordinat"))
+                &&(jenisKata.get("pelengkap").contains("posisi")||jenisKata.get("pelengkap").contains("diposisi")||jenisKata.get("atribut").contains("lintang")||jenisKata.get("atribut").contains("bujur")||jenisKata.get("atribut").contains("koordinat"))
                 ){
             Structure.setText("Aturan 2");
             
-            if(jenisKata.get("atribut").contains("koordinat")
+            if((jenisKata.get("atribut").contains("koordinat"))
                     ||(jenisKata.get("atribut").contains("bujur")&&jenisKata.get("atribut").contains("lintang"))){
                 TipeQuery3(jenisKata.get("wilayah"),"all");
             }else if(jenisKata.get("atribut").contains("bujur")){
@@ -363,7 +362,12 @@ public class MesinPenerjemah extends javax.swing.JFrame {
                 System.out.println("lintang");
             }
         }
+        else if((!jenisKata.get("wilayah").isEmpty() && jenisKata.get("tanya").contains("apakah")) && jenisKata.get("keterangan").contains("berpotensi")){
+            Structure.setText("Aturan 4");
+            TipeQuery5(jenisKata.get("wilayah"));
+        }
         else if (!jenisKata.get("wilayah").isEmpty() && tanya.contains("kapan")){
+            Structure.setText("Aturan 3");
             TipeQuery4(jenisKata.get("wilayah"));
         }
         
@@ -506,6 +510,35 @@ public class MesinPenerjemah extends javax.swing.JFrame {
             System.err.println(exc.getMessage());
         }
     }
+    public void TipeQuery5(ArrayList<String> Wilayah){
+        try{
+            Class.forName(driver);
+            Connection kon = DriverManager.getConnection(database,user,pass);
+            Statement stt = kon.createStatement();
+            String SQL = "SELECT Potensi";
+            SQL +=" from Data_Gempa_Terkini WHERE ";
+            for(int x=0;x<Wilayah.size();x++){
+                if(x==0){
+                    SQL+="Wilayah LIKE '%"+Wilayah.get(x)+"%' ";
+                }else{
+                    SQL+=" OR Wilayah LIKE '%"+Wilayah.get(x)+"%'";
+                }
+            }
+            ResultSet res = stt.executeQuery(SQL);
+            String Hasil="";
+            while(res.next()){
+                Hasil+="\n" + res.getString("Potensi");
+            }
+            
+            //menampilkan dalam text area
+            SQL_Result.setText(Hasil);
+            res.close();
+            stt.close();
+            kon.close();
+        }catch(Exception exc){
+            System.err.println(exc.getMessage());
+        }
+    }
         
     private void btn_prosesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_prosesActionPerformed
         // TODO add your handling code here:
@@ -516,6 +549,7 @@ public class MesinPenerjemah extends javax.swing.JFrame {
         // TODO add your handling code here:
         tblModel.setRowCount(0);
         Structure.setText("Hasil structure");
+        SQL_Result.setText("");
     }//GEN-LAST:event_btn_bersihActionPerformed
 
     /**
