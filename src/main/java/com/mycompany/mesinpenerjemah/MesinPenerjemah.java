@@ -347,6 +347,7 @@ public class MesinPenerjemah extends javax.swing.JFrame {
             }
         }
         else if((!jenisKata.get("wilayah").isEmpty())
+                &&(jenisKata.get("pelengkap").contains("posisi")||jenisKata.get("pelengkap").contains("diposisi"))
                 &&(jenisKata.get("atribut").contains("lintang")||jenisKata.get("atribut").contains("bujur")||jenisKata.get("atribut").contains("koordinat"))
                 ){
             Structure.setText("Aturan 2");
