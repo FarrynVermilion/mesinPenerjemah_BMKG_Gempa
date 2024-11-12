@@ -261,7 +261,7 @@ public class MesinPenerjemah extends javax.swing.JFrame {
     private void btn_scannerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_scannerActionPerformed
         // TODO add your handling code here:
         String[] a=  kalimat.getText().replaceAll("[. , ; ? /]"," ").split(" ");
-        if (a.length<=5){
+        if (a.length<5){
             Structure.setText("Kata kurang dari 5");
         }else{
             tblModel.setRowCount(0);
