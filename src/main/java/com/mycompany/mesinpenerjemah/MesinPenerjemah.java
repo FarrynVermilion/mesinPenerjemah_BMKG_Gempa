@@ -363,6 +363,9 @@ public class MesinPenerjemah extends javax.swing.JFrame {
                 System.out.println("lintang");
             }
         }
+        else if (!jenisKata.get("wilayah").isEmpty() && tanya.contains("kapan")){
+            TipeQuery4(jenisKata.get("wilayah"));
+        }
         
     }//GEN-LAST:event_btn_parsingActionPerformed
     
@@ -446,7 +449,7 @@ public class MesinPenerjemah extends javax.swing.JFrame {
                     SQL+=querry[x];
                 }else{
                     SQL+=querry[x]+",";
-                }
+                } 
             }
             SQL +=" from Data_Gempa_Terkini  WHERE ";
             for(int x=0;x<Wilayah.size();x++){
@@ -465,6 +468,35 @@ public class MesinPenerjemah extends javax.swing.JFrame {
                 }
                 Hasil+="\n";
             }
+            //menampilkan dalam text area
+            SQL_Result.setText(Hasil);
+            res.close();
+            stt.close();
+            kon.close();
+        }catch(Exception exc){
+            System.err.println(exc.getMessage());
+        }
+    }
+    public void TipeQuery4(ArrayList<String> Wilayah){
+        try{
+            Class.forName(driver);
+            Connection kon = DriverManager.getConnection(database,user,pass);
+            Statement stt = kon.createStatement();
+            String SQL = "SELECT Datetime";
+            SQL +=" from Data_Gempa_Terkini WHERE ";
+            for(int x=0;x<Wilayah.size();x++){
+                if(x==0){
+                    SQL+="Wilayah LIKE '%"+Wilayah.get(x)+"%' ";
+                }else{
+                    SQL+=" OR Wilayah LIKE '%"+Wilayah.get(x)+"%'";
+                }
+            }
+            ResultSet res = stt.executeQuery(SQL);
+            String Hasil="";
+            while(res.next()){
+                Hasil+="\n" + res.getString("Datetime");
+            }
+            
             //menampilkan dalam text area
             SQL_Result.setText(Hasil);
             res.close();
