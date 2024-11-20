@@ -347,10 +347,13 @@ public class MesinPenerjemah extends javax.swing.JFrame {
             }
         }
         else if((!jenisKata.get("wilayah").isEmpty())
-                &&(jenisKata.get("pelengkap").contains("posisi")||jenisKata.get("pelengkap").contains("diposisi")||jenisKata.get("atribut").contains("lintang")||jenisKata.get("atribut").contains("bujur")||jenisKata.get("atribut").contains("koordinat"))
+                &&(jenisKata.get("pelengkap").contains("posisi")
+                ||jenisKata.get("pelengkap").contains("diposisi")
+                ||jenisKata.get("atribut").contains("lintang")
+                ||jenisKata.get("atribut").contains("bujur")
+                ||jenisKata.get("atribut").contains("koordinat"))
                 ){
-            Structure.setText("Aturan 2");
-            
+            Structure.setText("Aturan 2");            
             if((jenisKata.get("atribut").contains("koordinat"))
                     ||(jenisKata.get("atribut").contains("bujur")&&jenisKata.get("atribut").contains("lintang"))){
                 TipeQuery3(jenisKata.get("wilayah"),"all");
@@ -369,6 +372,10 @@ public class MesinPenerjemah extends javax.swing.JFrame {
         else if (!jenisKata.get("wilayah").isEmpty() && tanya.contains("kapan")){
             Structure.setText("Aturan 3");
             TipeQuery4(jenisKata.get("wilayah"));
+        }
+        else{
+            Structure.setText("Tidak ada aturan ditemukan");
+            SQL_Result.setText("Aturan yang tersedia \nAturan 1 \tTampilan \nAturan 2 \tDiposisi\nAturan 3 \tKapan\nAturan 4 \tApa");
         }
         
     }//GEN-LAST:event_btn_parsingActionPerformed
