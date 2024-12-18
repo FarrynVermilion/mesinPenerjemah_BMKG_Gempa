@@ -263,6 +263,10 @@ public class MesinPenerjemah extends javax.swing.JFrame {
         String[] a=  kalimat.getText().replaceAll("[. , ; ? /]"," ").split(" ");
         if (a.length<5){
             Structure.setText("Kata kurang dari 5");
+            SQL_Result.setText("Aturan yang tersedia \nAturan 1 \tTampilan \tTampilkan seluruh field dari info gempa terkini"
+                    + "\nAturan 2 \tDiposis \tDi posisi Lintang berapa Gempa Bumi di sukabumi ?"
+                    + "i\nAturan 3 \tKapan\tKapan gempa bumi diwilayah sukabumi terjadi ?"
+                    + "\nAturan 4 \tApa\tApakah gempa bumi yang terjadi di Papua pada tanggal 06-Jan-14 dan pukul 04:29:33 WIB berpotensi tsunami?");
         }else{
             tblModel.setRowCount(0);
             String[] dummy={"","","",""};
@@ -336,9 +340,10 @@ public class MesinPenerjemah extends javax.swing.JFrame {
             }
         }
         
-        if(jenisKata.get("tanya").contains("tampilkan")
-                &&Integer.parseInt(tblModel.getValueAt(lokasiKata.get("tampilkan"), 2).toString())==1){
+        if(jenisKata.get("tanya").contains("tampilkan")){
             Structure.setText("Aturan 1");
+            SQL_Result.setText("Aturan yang tersedia \nAturan 1 \tTampilkan \tTampilkan seluruh field dari info gempa terkini");
+
             ArrayList<String> Array=jenisKata.get("atribut");
             if(jenisKata.get("atribut").size()==0&&jenisKata.get("operator").contains("seluruh")&&jenisKata.get("pelengkap").contains("field") && lokasiKata.get("seluruh")+1==lokasiKata.get("field")){
               TipeQuery1();
@@ -353,7 +358,11 @@ public class MesinPenerjemah extends javax.swing.JFrame {
                 ||jenisKata.get("atribut").contains("bujur")
                 ||jenisKata.get("atribut").contains("koordinat"))
                 ){
-            Structure.setText("Aturan 2");            
+            Structure.setText("Aturan 2");
+            SQL_Result.setText(
+                    "Aturan yang tersedia"
+                    + "\nAturan 2 \tDiposis \tDi posisi Lintang berapa Gempa Bumi di sukabumi ?");
+
             if((jenisKata.get("atribut").contains("koordinat"))
                     ||(jenisKata.get("atribut").contains("bujur")&&jenisKata.get("atribut").contains("lintang"))){
                 TipeQuery3(jenisKata.get("wilayah"),"all");
@@ -367,15 +376,22 @@ public class MesinPenerjemah extends javax.swing.JFrame {
         }
         else if((!jenisKata.get("wilayah").isEmpty() && jenisKata.get("tanya").contains("apakah")) && jenisKata.get("keterangan").contains("berpotensi")){
             Structure.setText("Aturan 4");
+            SQL_Result.setText("Aturan yang tersedia "
+                    + "\nAturan 3 \tApa\tApakah gempa bumi yang terjadi di Papua pada tanggal 06-Jan-14 dan pukul 04:29:33 WIB berpotensi tsunami?");
             TipeQuery5(jenisKata.get("wilayah"));
         }
         else if (!jenisKata.get("wilayah").isEmpty() && tanya.contains("kapan")){
             Structure.setText("Aturan 3");
+            SQL_Result.setText("Aturan yang tersedia"
+                    + "\nAturan 4 \tKapan\tKapan gempa bumi diwilayah sukabumi terjadi ?");
             TipeQuery4(jenisKata.get("wilayah"));
         }
         else{
             Structure.setText("Tidak ada aturan ditemukan");
-            SQL_Result.setText("Aturan yang tersedia \nAturan 1 \tTampilan \nAturan 2 \tDiposisi\nAturan 3 \tKapan\nAturan 4 \tApa");
+            SQL_Result.setText("Aturan yang tersedia \nAturan 1 \tTampilan \tTampilkan seluruh field dari info gempa terkini"
+                    + "\nAturan 2 \tDiposis \tDi posisi Lintang berapa Gempa Bumi di sukabumi ?"
+                    + "i\nAturan 3 \tKapan\tKapan gempa bumi diwilayah sukabumi terjadi ?"
+                    + "\nAturan 4 \tApa\tApakah gempa bumi yang terjadi di Papua pada tanggal 06-Jan-14 dan pukul 04:29:33 WIB berpotensi tsunami?");
         }
         
     }//GEN-LAST:event_btn_parsingActionPerformed
